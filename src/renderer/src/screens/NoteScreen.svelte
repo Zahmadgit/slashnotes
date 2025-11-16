@@ -1,4 +1,5 @@
 <script>
+  import Matter from 'matter-js'
   import { onMount } from 'svelte'
   import { get, set, del, clear, keys, getAllKeys } from '../helpers/idbAPIHelper'
 
@@ -11,7 +12,6 @@
       //if I wanna get the Values for all the keys I need to get all keys first
       const responseKeys = await keys()
       console.log(responseKeys)
-      //plan on using this ref to get the key for the put operation
       //alright lets use Promise.all now...
       //Promise.all returns a promise with an array of resolved values
       const waitingPromise = await Promise.all(
@@ -39,6 +39,39 @@
     }
   }
 
+  // module aliases
+  var Engine = Matter.Engine,
+    Render = Matter.Render,
+    Runner = Matter.Runner,
+    Bodies = Matter.Bodies,
+    Composite = Matter.Composite
+
+  // create an engine
+  var engine = Engine.create()
+
+  // create a renderer
+  var render = Render.create({
+    element: document.body,
+    engine: engine
+  })
+
+  // create two boxes and a ground
+  var boxA = Bodies.rectangle(400, 200, 80, 80)
+  var boxB = Bodies.rectangle(450, 50, 80, 80)
+  var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true })
+
+  // add all of the bodies to the world
+  Composite.add(engine.world, [boxA, boxB, ground])
+
+  // run the renderer
+  Render.run(render)
+
+  // create runner
+  var runner = Runner.create()
+
+  // run the engine
+  Runner.run(runner, engine)
+
   onMount(() => {
     getTask()
   })
@@ -49,8 +82,10 @@
   <textarea id="inputText" name="inputText" bind:value={inputText}></textarea>
   <button onclick={() => saveTask(Date.now().toString(), inputText)}>Save Note</button>
   <ul>
-    {#each notesArray as note}
-      <li>{note}</li>
+    {#each notesArray as note (note)}
+      <div>
+        <li>{note}</li>
+      </div>
     {/each}
   </ul>
 </div>
