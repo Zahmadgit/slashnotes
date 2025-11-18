@@ -1,8 +1,8 @@
 <script>
   import { onMount } from 'svelte'
   import { get, set, keys } from '../helpers/idbAPIHelper'
-  import jumpSheet from '../assets/Samurai/Jump.png'
-
+  import jumpSheet from '../assets/Samurai/Run.png'
+  import styles from './NoteScreen.module.css'
   let inputText = ''
   let notesArray = []
 
@@ -40,8 +40,8 @@
     sprite.src = jumpSheet // your sprite sheet
 
     // --- SPRITE ANIMATION SETTINGS ---
-    const totalFrames = 12
-    const frameWidth = 1536 / totalFrames
+    const totalFrames = 8
+    const frameWidth = 1024 / totalFrames
     const frameHeight = 128
 
     let frameIndex = 0

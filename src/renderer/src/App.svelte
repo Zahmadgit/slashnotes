@@ -5,13 +5,15 @@
 </script>
 
 <div>
-  <h1>Count: {count}</h1>
-  <button onclick={() => count++}>Click me to increment the count</button>
-  <button onclick={() => count--}>Click me to decrement the count</button>
+  <div>
+    <h1>Count: {count}</h1>
+    <button onclick={() => count++}>Click me to increment the count</button>
+    <button onclick={() => count--}>Click me to decrement the count</button>
 
-  {#if count === 0}
-    <h2>count is 0</h2>
-  {/if}
+    {#if count === 0}
+      <h2>count is 0</h2>
+    {/if}
+  </div>
+
+  <NoteScreen />
 </div>
-
-<NoteScreen />
