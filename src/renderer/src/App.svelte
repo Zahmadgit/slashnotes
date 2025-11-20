@@ -2,6 +2,10 @@
   import NoteScreen from './screens/NoteScreen.svelte'
 
   let count = $state(0)
+
+  const handleTheme = async () => {
+    const isDarkMode = await window.darkMode.toggle()
+  }
 </script>
 
 <div>
@@ -14,6 +18,7 @@
       <h2>count is 0</h2>
     {/if}
   </div>
+  <button onclick={() => handleTheme()}>Toggle Theme</button>
 
   <NoteScreen />
 </div>
