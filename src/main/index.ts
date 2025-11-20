@@ -1,7 +1,20 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+
+ipcMain.handle('dark-mode:toggle', () => {
+  if (nativeTheme.shouldUseDarkColors) {
+    nativeTheme.themeSource = 'light'
+  } else {
+    nativeTheme.themeSource = 'dark'
+  }
+  return nativeTheme.shouldUseDarkColors
+})
+
+ipcMain.handle('dark-mode:system', () => {
+  nativeTheme.themeSource = 'system'
+})
 
 function createWindow(): void {
   // Create the browser window.
