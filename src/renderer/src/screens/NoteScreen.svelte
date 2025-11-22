@@ -2,6 +2,8 @@
   import { onMount } from 'svelte'
   import { get, set, keys } from '../helpers/idbAPIHelper'
   import jumpSheet from '../assets/Samurai/Run.png'
+  import fallingSheet from '../assets/Samurai/Falling.png'
+
   import styles from './NoteScreen.module.css'
   let inputText = ''
   let notesArray = []
@@ -36,49 +38,60 @@
     const canvas: HTMLCanvasElement = document.getElementById('game')
     const ctx = canvas.getContext('2d')
 
-    const sprite = new Image()
-    sprite.src = jumpSheet // your sprite sheet
+    let state: 'ground' | 'falling' = 'falling'
 
-    // --- SPRITE ANIMATION SETTINGS ---
-    const totalFrames = 8
-    const frameWidth = 1024 / totalFrames
+    const groundSprite = new Image()
+    groundSprite.src = jumpSheet // your groundSprite sheet
+
+    const fallingSprite = new Image()
+    fallingSprite.src = fallingSheet
+
+    // --- groundSprite ANIMATION SETTINGS ---
+    const totalFrames = {
+      ground: 8,
+      falling: 3
+    }
+
     const frameHeight = 128
 
     let frameIndex = 0
     let frameTimer = 0
-    let frameInterval = 100
 
-    // --- SPRITE PHYSICS ---
-    let x = 100
-    let y = 0
+    // --- groundSprite PHYSICS ---
+    let x = 0
+    let y = -100
     let velocityY = 0
-    const gravity = 0.1
+    const gravity = 0.01
+    const frameIntervals = { ground: 100, falling: 150 }
 
     function update(delta) {
       velocityY += gravity
       y += velocityY
 
-      // Stop at ground
+      state = y + frameHeight >= canvas.height ? 'ground' : 'falling'
+
+      frameTimer += delta
+      if (frameTimer >= frameIntervals[state]) {
+        frameIndex = (frameIndex + 1) % totalFrames[state]
+        frameTimer = 0
+      }
+
+      // clamp to ground
       if (y + frameHeight > canvas.height) {
         y = canvas.height - frameHeight
         velocityY = 0
-      }
-
-      // Animate frames
-      frameTimer += delta
-      if (frameTimer >= frameInterval) {
-        frameIndex = (frameIndex + 1) % totalFrames
-        frameTimer = 0
       }
     }
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
+      const sprite = state === 'ground' ? groundSprite : fallingSprite
+      const frameWidth = state === 'falling' ? 384 / totalFrames.falling : 1024 / totalFrames.ground
 
       ctx.drawImage(
         sprite,
-        frameIndex * frameWidth, // source X
-        0, // source Y
+        frameIndex * frameWidth,
+        0,
         frameWidth,
         frameHeight,
         x,
@@ -89,7 +102,7 @@
     }
 
     // Only start animation once image is loaded
-    sprite.onload = () => {
+    groundSprite.onload = () => {
       let lastTime = 0
 
       function gameLoop(timestamp) {
