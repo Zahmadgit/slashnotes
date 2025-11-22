@@ -10,4 +10,7 @@
     background: #ddd;
     color: black;
   }
+  button {
+    background-color: #333;
+  }
 }

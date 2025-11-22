@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte'
   import { get, set, keys } from '../helpers/idbAPIHelper'
   import jumpSheet from '../assets/Samurai/Run.png'
@@ -33,7 +33,7 @@
   onMount(() => {
     getTask()
 
-    const canvas = document.getElementById('game')
+    const canvas: HTMLCanvasElement = document.getElementById('game')
     const ctx = canvas.getContext('2d')
 
     const sprite = new Image()
@@ -107,11 +107,13 @@
   })
 </script>
 
-<canvas id="game" width="400" height="400"></canvas>
-
 <div>
-  <h1>Make a note</h1>
-  <textarea id="inputText" name="inputText" bind:value={inputText}></textarea>
+  <h1>make a note</h1>
+  <div class={styles.canvasWrapper}>
+    <textarea id="inputText" name="inputText" class={styles.canvasTextarea} bind:value={inputText}
+    ></textarea>
+    <canvas id="game" class={styles.canvas}></canvas>
+  </div>
   <button on:click={() => saveTask(Date.now().toString(), inputText)}>Save Note</button>
 
   <ul>

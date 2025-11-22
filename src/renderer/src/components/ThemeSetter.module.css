@@ -1,0 +1,19 @@
+.themeButton {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 1rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.themeButton img {
+  height: 2rem;
+  width: 2rem;
+}
+
+.themeButton:hover {
+  background: white;
+}

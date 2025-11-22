@@ -1,0 +1,22 @@
+.canvasWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.canvasTextarea {
+  width: 400px;
+  height: 400px;
+  z-index: 1;
+  position: relative;
+}
+.canvas {
+  width: 400px;
+  height: 400px;
+  z-index: 2;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+
+  border: 2px solid red;
+}
