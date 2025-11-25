@@ -3,10 +3,18 @@
   import { get, set, keys } from '../helpers/idbAPIHelper'
   import jumpSheet from '../assets/Samurai/Run.png'
   import fallingSheet from '../assets/Samurai/Falling.png'
+  import getCarat from 'textarea-caret'
 
   import styles from './NoteScreen.module.css'
-  let inputText = ''
-  let notesArray = []
+  let inputText = $state('')
+  let notesArray = $state([])
+
+  let textareainputtext
+
+  const handleCaretPosition = (): void => {
+    const xyCoordinates = getCarat(textareainputtext, textareainputtext.selectionStart)
+    console.log(xyCoordinates.top, xyCoordinates.left)
+  }
 
   const getTask = async () => {
     try {
@@ -33,9 +41,12 @@
   }
 
   onMount(() => {
+    textareainputtext = document.getElementById('textareainputtext')
+
     getTask()
 
     const canvas: HTMLCanvasElement = document.getElementById('game')
+
     const ctx = canvas.getContext('2d')
 
     let state: 'ground' | 'falling' = 'falling'
@@ -123,12 +134,17 @@
 <div>
   <h1>make a note</h1>
   <div class={styles.canvasWrapper}>
-    <textarea id="inputText" name="inputText" class={styles.canvasTextarea} bind:value={inputText}
+    <textarea
+      id="textareainputtext"
+      name="textareainputtext"
+      class={styles.canvasTextarea}
+      bind:value={inputText}
     ></textarea>
+
     <canvas id="game" class={styles.canvas}></canvas>
   </div>
-  <button on:click={() => saveTask(Date.now().toString(), inputText)}>Save Note</button>
-
+  <button onclick={() => saveTask(Date.now().toString(), inputText)}>Save Note</button>
+  <button onclick={handleCaretPosition}>caret position</button>
   <ul>
     {#each notesArray as note (note)}
       <li>{note}</li>
