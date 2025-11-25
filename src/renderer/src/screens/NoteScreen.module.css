@@ -11,8 +11,6 @@
   resize: none;
 }
 .canvas {
-  width: 400px;
-  height: 400px;
   z-index: 2;
   position: absolute;
   top: 0;
