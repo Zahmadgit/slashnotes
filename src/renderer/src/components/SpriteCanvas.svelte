@@ -73,6 +73,8 @@
       attackTimer -= delta
       if (attackTimer <= 0) {
         animationState = y + frameHeight >= canvas.height ? 'ground' : 'falling'
+        y = xycoordinate.yValue
+        x = xycoordinate.xValue
         xycoordinate.xValue = 0
         xycoordinate.yValue = 0
       }
