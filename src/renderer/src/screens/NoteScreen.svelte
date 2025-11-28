@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import { get, set, keys } from '../helpers/idbAPIHelper'
   import getCarat from 'textarea-caret'
+  import { xycoordinate, setXY } from '../state/xycoordinate.svelte'
 
   import styles from './NoteScreen.module.css'
   import SpriteCanvas from '../components/SpriteCanvas.svelte'
@@ -20,10 +21,17 @@
     prevText = inputText
     prevCaret = textareainputtext.selectionStart
   }
-
+  //Y = 375 is the lowest I can go currently with 400x400 canvas
   const handleCaretPosition = (): void => {
     const xyCoordinates = getCarat(textareainputtext, textareainputtext.selectionStart)
-    console.log(xyCoordinates.top, xyCoordinates.left, textareainputtext.selectionStart)
+    console.log(
+      'Y Coordinate:',
+      xyCoordinates.top,
+      'X Coordinate:',
+      xyCoordinates.left,
+      'Caret Position:',
+      textareainputtext.selectionStart
+    )
 
     textCaretXCoordinate = xyCoordinates.left
     textCaretYCoordinate = xyCoordinates.top
@@ -78,6 +86,7 @@
     if (wholeWordDeleted) {
       // caret coords should already be updated by handleCaretPosition()
       playDeleteAnimationAt = [textCaretXCoordinate, textCaretYCoordinate]
+      setXY(textCaretXCoordinate, textCaretYCoordinate)
       console.log('WORD DELETED!')
       console.log('Animation at:', playDeleteAnimationAt)
     }
@@ -146,6 +155,9 @@
   </div>
   <button onclick={() => saveTask(Date.now().toString(), inputText)}>Save Note</button>
   <button onclick={handleCaretPosition}>caret position</button>
+  <h1>{xycoordinate.xValue}</h1>
+
+  <h1>{xycoordinate.yValue}</h1>
   <ul>
     {#each notesArray as note (note)}
       <li>{note}</li>

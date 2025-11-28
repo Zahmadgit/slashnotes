@@ -2,63 +2,118 @@
   import { onMount } from 'svelte'
   import jumpSheet from '../assets/Samurai/Run.png'
   import fallingSheet from '../assets/Samurai/Falling.png'
-
+  import attackSheet from '../assets/Samurai/Attack_2.png'
+  import { xycoordinate } from '../state/xycoordinate.svelte'
   import styles from './SpriteCanvas.module.css'
-  onMount(() => {
-    const canvas: HTMLCanvasElement = document.getElementById('game')
 
-    const ctx = canvas.getContext('2d')
+  const groundSprite = new Image()
+  groundSprite.src = jumpSheet
 
-    let state: 'ground' | 'falling' = 'falling'
+  const fallingSprite = new Image()
+  fallingSprite.src = fallingSheet
 
-    const groundSprite = new Image()
-    groundSprite.src = jumpSheet // your groundSprite sheet
+  const attackingSprite = new Image()
+  attackingSprite.src = attackSheet
 
-    const fallingSprite = new Image()
-    fallingSprite.src = fallingSheet
+  let canvas: HTMLCanvasElement
+  let ctx
+  let animationState: 'ground' | 'falling' | 'attacking' = 'falling'
 
-    // --- groundSprite ANIMATION SETTINGS ---
-    const totalFrames = {
-      ground: 8,
-      falling: 3
+  //determine which sprite to draw
+  const sprites = {
+    ground: groundSprite,
+    falling: fallingSprite,
+    attacking: attackingSprite
+  }
+
+  //the frames in each sprite framesheet are different, define them here
+  const totalFrames = {
+    ground: 8,
+    falling: 3,
+    attacking: 4
+  }
+
+  //determine which width size to use, useful incase I start using different dimentions, right now its 128*128
+  const frameWidths = {
+    ground: 1024 / totalFrames.ground,
+    falling: 384 / totalFrames.falling,
+    attacking: 512 / totalFrames.attacking
+  }
+
+  //height of the sprite framesheets
+  const frameHeight = 128
+
+  let frameIndex = 0
+  let frameTimer = 0
+
+  let attackTimer = 0
+  //this is in milliseconds, frames * 100
+  const attackDuration = 300
+
+  // --- gravity physics to simulate falling ---
+  let x = 0
+  let y = -100
+  let velocityY = 0
+  const gravity = 0.02
+  const frameIntervals = 100
+
+  //function to make sprite fall
+  const update = (delta) => {
+    velocityY += gravity
+    y += velocityY
+
+    if (animationState !== 'attacking') {
+      if (xycoordinate.xValue > 0 || xycoordinate.yValue > 0) {
+        animationState = 'attacking'
+        attackTimer = attackDuration
+      }
     }
 
-    const frameHeight = 128
-
-    let frameIndex = 0
-    let frameTimer = 0
-
-    // --- groundSprite PHYSICS ---
-    let x = 0
-    let y = -100
-    let velocityY = 0
-    const gravity = 0.01
-    const frameIntervals = { ground: 100, falling: 100 }
-
-    function update(delta) {
-      velocityY += gravity
-      y += velocityY
-
-      state = y + frameHeight >= canvas.height ? 'ground' : 'falling'
-
-      frameTimer += delta
-      if (frameTimer >= frameIntervals[state]) {
-        frameIndex = (frameIndex + 1) % totalFrames[state]
-        frameTimer = 0
+    if (animationState === 'attacking') {
+      attackTimer -= delta
+      if (attackTimer <= 0) {
+        animationState = y + frameHeight >= canvas.height ? 'ground' : 'falling'
+        xycoordinate.xValue = 0
+        xycoordinate.yValue = 0
       }
-
-      // clamp to ground
-      if (y + frameHeight > canvas.height) {
-        y = canvas.height - frameHeight
-        velocityY = 0
-      }
+    } else {
+      animationState = y + frameHeight >= canvas.height ? 'ground' : 'falling'
     }
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      const sprite = state === 'ground' ? groundSprite : fallingSprite
-      const frameWidth = state === 'falling' ? 384 / totalFrames.falling : 1024 / totalFrames.ground
+    frameTimer += delta
+    if (frameTimer >= frameIntervals) {
+      frameIndex = (frameIndex + 1) % totalFrames[animationState]
+      frameTimer = 0
+    }
 
+    // clamp to ground
+    if (y + frameHeight > canvas.height) {
+      y = canvas.height - frameHeight
+      velocityY = 0
+    }
+  }
+
+  const draw = () => {
+    //clearRect is a function used to erase the canvas before each redraw
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    const sprite = sprites[animationState]
+    const frameWidth = frameWidths[animationState]
+
+    if (animationState === 'attacking') {
+      ctx.drawImage(
+        sprite,
+        frameIndex * frameWidth,
+        0,
+        frameWidth,
+        frameHeight,
+        xycoordinate.xValue,
+        xycoordinate.yValue,
+        frameWidth,
+        frameHeight
+      )
+      console.log('Animation played at x:', xycoordinate.xValue)
+      console.log('Animation played at y:', xycoordinate.yValue)
+    } else {
       ctx.drawImage(
         sprite,
         frameIndex * frameWidth,
@@ -67,29 +122,35 @@
         frameHeight,
         x,
         y,
-        // textCaretXCoordinate,
-        // textCaretYCoordinate,
         frameWidth,
         frameHeight
       )
     }
+  }
 
-    // Only start animation once image is loaded
-    groundSprite.onload = () => {
-      let lastTime = 0
+  let lastTime = 0
+  const gameLoop = (timestamp) => {
+    const delta = timestamp - lastTime
+    lastTime = timestamp
 
-      function gameLoop(timestamp) {
-        const delta = timestamp - lastTime
-        lastTime = timestamp
+    update(delta)
+    draw()
 
-        update(delta)
-        draw()
+    requestAnimationFrame(gameLoop)
+  }
 
-        requestAnimationFrame(gameLoop)
-      }
+  // Only start animation once image is loaded
 
-      requestAnimationFrame(gameLoop)
-    }
+  onMount(() => {
+    canvas = document.getElementById('game')
+
+    ctx = canvas.getContext('2d')
+
+    /*
+    dont need an effect, or to put the coordinates inside the effect to make animations reactive
+    once I start the gameloop, its continous 
+    */
+    requestAnimationFrame(gameLoop)
   })
 </script>
 

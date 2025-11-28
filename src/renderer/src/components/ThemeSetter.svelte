@@ -3,7 +3,6 @@
   import darkmodeurl from '../../../../resources/darkmode.png'
   import lightmodeurl from '../../../../resources/lightmode.png'
   import { onMount } from 'svelte'
-
   let shouldUseDark = $state(false)
 
   onMount(async () => {
@@ -19,7 +18,13 @@
 </script>
 
 <div>
-  <button class={styles.themeButton} onclick={handleTheme} aria-label="switch theme button">
+  <button
+    class={styles.themeButton}
+    onclick={() => {
+      handleTheme()
+    }}
+    aria-label="switch theme button"
+  >
     <img src={shouldUseDark ? darkmodeurl : lightmodeurl} alt="theme" />
   </button>
 </div>
