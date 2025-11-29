@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import jumpSheet from '../assets/Samurai/Run.png'
   import fallingSheet from '../assets/Samurai/Falling.png'
-  import attackSheet from '../assets/Samurai/Attack_2.png'
+  import attackSheet from '../assets/Samurai/attackingV2.png'
   import { xycoordinate } from '../state/xycoordinate.svelte'
   import styles from './SpriteCanvas.module.css'
 
@@ -40,15 +40,19 @@
     attacking: 512 / totalFrames.attacking
   }
 
-  //height of the sprite framesheets
-  const frameHeight = 128
+  //height of the sprite framesheets, attacking needs to be more pixel perfect
+  const frameHeight = {
+    ground: 128,
+    falling: 128,
+    attacking: 74
+  }
 
   let frameIndex = 0
   let frameTimer = 0
 
   let attackTimer = 0
   //this is in milliseconds, frames * 100
-  const attackDuration = 300
+  const attackDuration = 400
 
   // --- gravity physics to simulate falling ---
   let x = 0
@@ -72,14 +76,14 @@
     if (animationState === 'attacking') {
       attackTimer -= delta
       if (attackTimer <= 0) {
-        animationState = y + frameHeight >= canvas.height ? 'ground' : 'falling'
+        animationState = y + frameHeight[animationState] >= canvas.height ? 'ground' : 'falling'
         y = xycoordinate.yValue
         x = xycoordinate.xValue
         xycoordinate.xValue = 0
         xycoordinate.yValue = 0
       }
     } else {
-      animationState = y + frameHeight >= canvas.height ? 'ground' : 'falling'
+      animationState = y + frameHeight[animationState] >= canvas.height ? 'ground' : 'falling'
     }
 
     frameTimer += delta
@@ -89,8 +93,8 @@
     }
 
     // clamp to ground
-    if (y + frameHeight > canvas.height) {
-      y = canvas.height - frameHeight
+    if (y + frameHeight[animationState] > canvas.height) {
+      y = canvas.height - frameHeight[animationState]
       velocityY = 0
     }
   }
@@ -107,11 +111,11 @@
         frameIndex * frameWidth,
         0,
         frameWidth,
-        frameHeight,
+        frameHeight[animationState],
         xycoordinate.xValue,
         xycoordinate.yValue,
         frameWidth,
-        frameHeight
+        frameHeight[animationState]
       )
       console.log('Animation played at x:', xycoordinate.xValue)
       console.log('Animation played at y:', xycoordinate.yValue)
@@ -121,11 +125,11 @@
         frameIndex * frameWidth,
         0,
         frameWidth,
-        frameHeight,
+        frameHeight[animationState],
         x,
         y,
         frameWidth,
-        frameHeight
+        frameHeight[animationState]
       )
     }
   }
