@@ -3,12 +3,14 @@
   import { get, set, keys } from '../helpers/idbAPIHelper'
   import getCarat from 'textarea-caret'
   import { xycoordinate, setXY } from '../state/xycoordinate.svelte'
+  import { testAutoCorrect, readEnglishFile } from 'zautocorrect'
 
   import styles from './NoteScreen.module.css'
   import SpriteCanvas from '../components/SpriteCanvas.svelte'
   let inputText = $state('')
   let notesArray = $state([])
 
+  let dictionary
   let textareainputtext = null
   let textCaretXCoordinate = 0
   let textCaretYCoordinate = 0
@@ -139,6 +141,9 @@
     textareainputtext = document.getElementById('textareainputtext')
 
     getTask()
+
+    dictionary = readEnglishFile()
+    console.log(dictionary)
   })
 </script>
 

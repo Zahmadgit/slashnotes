@@ -125,7 +125,7 @@
         0,
         frameWidth,
         frameHeight[animationState],
-        xycoordinate.xValue,
+        xycoordinate.xValue - 80,
         xycoordinate.yValue,
         frameWidth,
         frameHeight[animationState]
