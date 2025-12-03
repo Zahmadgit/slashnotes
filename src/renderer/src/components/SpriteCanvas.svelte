@@ -100,11 +100,24 @@
   }
 
   const draw = () => {
-    //clearRect is a function used to erase the canvas before each redraw
+    //clearRect is a function used to erase the canvas before each redraw, it's a canvas api
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     const sprite = sprites[animationState]
     const frameWidth = frameWidths[animationState]
 
+    /*
+
+    max x and y are required to keep drawling inside the canvas box
+    max x: 332
+    max y: 329
+    */
+
+    if (x > 332) {
+      x = 332
+    }
+    if (y > 329) {
+      y = 329
+    }
     if (animationState === 'attacking') {
       ctx.drawImage(
         sprite,

@@ -88,6 +88,8 @@
       playDeleteAnimationAt = [textCaretXCoordinate, textCaretYCoordinate]
 
       //using these values to play the attack animation at these coordinates on the canvas
+      //max y value: 329
+
       setXY(textCaretXCoordinate, textCaretYCoordinate)
       console.log('WORD DELETED!')
       console.log('Animation at:', playDeleteAnimationAt)
