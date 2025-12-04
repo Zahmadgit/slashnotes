@@ -3,11 +3,18 @@
   import { get, set, keys } from '../helpers/idbAPIHelper'
   import getCarat from 'textarea-caret'
   import { xycoordinate, setXY } from '../state/xycoordinate.svelte'
-
+  import { selectedNote, setNote } from '../state/selectedNote.svelte'
   import styles from './NoteScreen.module.css'
   import SpriteCanvas from '../components/SpriteCanvas.svelte'
-  let inputText = $state('')
+  import DropDown from '../components/DropDown.svelte'
+
+  //what the hell is wrong with $state, anyways if it needs to be writable use derived
+  let inputText = $derived('')
   let notesArray = $state([])
+
+  $effect(() => {
+    inputText = selectedNote?.note ?? inputText
+  })
 
   let textareainputtext = null
   let textCaretXCoordinate = 0
@@ -162,9 +169,11 @@
   <h1>{xycoordinate.xValue}</h1>
 
   <h1>{xycoordinate.yValue}</h1>
-  <ul>
+
+  <DropDown {...notesArray} />
+  <!-- <ul>
     {#each notesArray as note (note)}
       <li>{note}</li>
     {/each}
-  </ul>
+  </ul> -->
 </div>
