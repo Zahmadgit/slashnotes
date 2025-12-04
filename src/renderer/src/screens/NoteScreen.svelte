@@ -1,16 +1,25 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { get, set, keys } from '../helpers/idbAPIHelper'
+  import { getNotes, saveNote } from '../helpers/idbAPIsetterHelper'
   import getCarat from 'textarea-caret'
   import { xycoordinate, setXY } from '../state/xycoordinate.svelte'
   import { selectedNote, setNote } from '../state/selectedNote.svelte'
+  import {
+    notesArray,
+    setNotesArray,
+    IDBKeys,
+    deleteKey,
+    saveKey,
+    setDeleteKey,
+    setKeys,
+    setSaveKey
+  } from '../state/notesArray.svelte'
   import styles from './NoteScreen.module.css'
   import SpriteCanvas from '../components/SpriteCanvas.svelte'
   import DropDown from '../components/DropDown.svelte'
 
   //what the hell is wrong with $state, anyways if it needs to be writable use derived
   let inputText = $derived('')
-  let notesArray = $state([])
 
   $effect(() => {
     inputText = selectedNote?.note ?? inputText
@@ -118,34 +127,10 @@
     })
   }
 
-  const getTask = async (): Promise<void> => {
-    try {
-      const responseKeys = await keys()
-      const waitingPromise = await Promise.all(
-        responseKeys.map(async (keyItem) => {
-          const responseValue = await get(keyItem)
-          return responseValue
-        })
-      )
-      notesArray = waitingPromise
-    } catch (e) {
-      console.log('Error getting tasks: ', e)
-    }
-  }
-
-  const saveTask = async (keys, value): Promise<void> => {
-    try {
-      await set(keys, value)
-      await getTask()
-    } catch (e) {
-      console.log('Error saving task: ', e)
-    }
-  }
-
   onMount(() => {
     textareainputtext = document.getElementById('textareainputtext')
 
-    getTask()
+    getNotes()
   })
 </script>
 
@@ -164,7 +149,7 @@
     ></textarea>
     <SpriteCanvas />
   </div>
-  <button onclick={() => saveTask(Date.now().toString(), inputText)}>Save Note</button>
+  <button onclick={() => saveNote(Date.now().toString(), inputText)}>Save Note</button>
   <button onclick={handleCaretPosition}>caret position</button>
   <h1>{xycoordinate.xValue}</h1>
 
