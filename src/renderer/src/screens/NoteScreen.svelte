@@ -12,7 +12,9 @@
     saveKey,
     setDeleteKey,
     setKeys,
-    setSaveKey
+    setSaveKey,
+    editSaveBoolean,
+    setEditSaveBoolean
   } from '../state/notesArray.svelte'
   import styles from './NoteScreen.module.css'
   import SpriteCanvas from '../components/SpriteCanvas.svelte'
@@ -22,7 +24,7 @@
   let inputText = $derived('')
 
   $effect(() => {
-    inputText = selectedNote?.note ?? inputText
+    inputText = selectedNote.note
   })
 
   let textareainputtext = null
@@ -127,6 +129,18 @@
     })
   }
 
+  const handleSave = () => {
+    if (editSaveBoolean) {
+      saveNote(saveKey, inputText)
+      setEditSaveBoolean(false)
+    } else {
+      saveNote(Date.now().toString(), inputText)
+    }
+    inputText = ''
+  }
+
+  // Date.now().toString()
+  //1765162322036
   onMount(() => {
     textareainputtext = document.getElementById('textareainputtext')
 
@@ -149,7 +163,7 @@
     ></textarea>
     <SpriteCanvas />
   </div>
-  <button onclick={() => saveNote(Date.now().toString(), inputText)}>Save Note</button>
+  <button onclick={() => handleSave()}>Save Note</button>
   <button onclick={handleCaretPosition}>caret position</button>
   <h1>{xycoordinate.xValue}</h1>
 

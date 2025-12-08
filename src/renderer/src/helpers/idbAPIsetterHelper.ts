@@ -12,17 +12,19 @@ import {
   setSaveKey
 } from '../state/notesArray.svelte'
 
+export const returnEditNoteKey = async (): Promise<void> => {}
+
 export const getNotes = async (): Promise<void> => {
   try {
+    let noteAndKeyArr = []
     setKeys(await keys())
     console.log(IDBKeys)
-    const waitingPromise = await Promise.all(
-      IDBKeys.map(async (keyItem) => {
-        const responseValue = await get(keyItem)
-        return responseValue
-      })
-    )
-    setNotesArray(waitingPromise)
+    IDBKeys.map(async (keyItem) => {
+      const responseValue = await get(keyItem)
+      noteAndKeyArr.push({ note: responseValue, key: keyItem })
+      console.log(noteAndKeyArr)
+      setNotesArray(noteAndKeyArr)
+    })
   } catch (e) {
     console.log('Error getting tasks: ', e)
   }

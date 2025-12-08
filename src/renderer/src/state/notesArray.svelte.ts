@@ -2,11 +2,16 @@ export let notesArray = $state([])
 export let IDBKeys = []
 export let deleteKey: number
 export let saveKey: number
+export let editSaveBoolean = false
 
-export const setNotesArray = (arrayofnotes: string[]) => {
+export const setEditSaveBoolean = (bool: boolean) => {
+  editSaveBoolean = bool
+}
+
+export const setNotesArray = (notes: { note: string; key: string }[]) => {
   notesArray.length = 0
 
-  notesArray.push(...arrayofnotes)
+  notesArray.push(...notes)
 }
 
 export const setKeys = (arrayofkeys: IDBValidKey[]) => {

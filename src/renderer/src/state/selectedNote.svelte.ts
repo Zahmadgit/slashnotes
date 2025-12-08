@@ -1,4 +1,6 @@
-export const selectedNote = $state({ note: null })
-export const setNote = (note: string) => {
+export const selectedNote = $state({ note: null, key: null })
+
+export const setNote = (note: string, key: string) => {
   selectedNote.note = note
+  selectedNote.key = key
 }
