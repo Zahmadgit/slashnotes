@@ -25,9 +25,27 @@ function createWindow(): void {
 
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      contextIsolation: true,
+      nodeIntegration: false
     },
     icon: join(__dirname, '../../resources/faviconDev.icns')
+  })
+  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': [
+          `
+          default-src 'self';
+          script-src 'self';
+          style-src 'self' 'unsafe-inline';
+          img-src 'self' data:;
+          connect-src 'self' https://*.convex.cloud wss://*.convex.cloud;
+          `
+        ]
+      }
+    })
   })
   mainWindow.webContents.openDevTools()
 

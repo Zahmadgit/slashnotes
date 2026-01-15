@@ -19,6 +19,7 @@
   import styles from './NoteScreen.module.css'
   import SpriteCanvas from '../components/SpriteCanvas.svelte'
   import DropDown from '../components/DropDown.svelte'
+  import ConvexTodoList from '../components/ConvexTodoList.svelte'
 
   //what the hell is wrong with $state, anyways if it needs to be writable use derived
   let inputText = $derived('')
@@ -54,6 +55,7 @@
     textCaretXCoordinate = xyCoordinates.left
     textCaretYCoordinate = xyCoordinates.top
   }
+
   const handleWordDeletionCheck = (e: InputEvent): void => {
     // Only care about backspace-style deletions
     if (e.inputType !== 'deleteContentBackward') return
@@ -149,6 +151,7 @@
 </script>
 
 <div>
+  <ConvexTodoList></ConvexTodoList>
   <h1>make a note</h1>
   <div class={styles.canvasWrapper}>
     <textarea
@@ -170,6 +173,7 @@
   <h1>{xycoordinate.yValue}</h1>
 
   <DropDown {...notesArray} />
+
   <!-- <ul>
     {#each notesArray as note (note)}
       <li>{note}</li>

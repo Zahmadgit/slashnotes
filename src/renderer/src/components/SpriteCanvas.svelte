@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
   import jumpSheet from '../assets/Samurai/Run.png'
   import fallingSheet from '../assets/Samurai/Falling.png'
   import attackSheet from '../assets/Samurai/attackingV2.png'
@@ -148,6 +148,7 @@
   }
 
   let lastTime = 0
+  let animationId: number
   const gameLoop = (timestamp) => {
     const delta = timestamp - lastTime
     lastTime = timestamp
@@ -155,21 +156,28 @@
     update(delta)
     draw()
 
-    requestAnimationFrame(gameLoop)
+    animationId = requestAnimationFrame(gameLoop)
   }
 
   // Only start animation once image is loaded
 
   onMount(() => {
-    canvas = document.getElementById('game')
+    canvas = document.getElementById('game') as HTMLCanvasElement
 
     ctx = canvas.getContext('2d')
 
     /*
     dont need an effect, or to put the coordinates inside the effect to make animations reactive
-    once I start the gameloop, its continous 
+    once I start the gameloop, its continous
     */
-    requestAnimationFrame(gameLoop)
+    animationId = requestAnimationFrame(gameLoop)
+  })
+
+  //when the component is destoryed, I gotta make sure im deleting the animationFrame or else ill leak some memories
+  onDestroy(() => {
+    if (animationId) {
+      cancelAnimationFrame(animationId)
+    }
   })
 </script>
 
